@@ -47,6 +47,10 @@ a { color:#1d4ed8; text-decoration:none; } a:hover { text-decoration:underline; 
 .bubble-map-card { grid-column:1/-1; min-height:620px; }
 .bubble-map-card .chart.tall { height:590px; }
 .bubble-map-section .tag-cloud { grid-column:1/-1; }
+.chart-card-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin:2px 4px 4px; }
+.chart-card-head h3 { margin:0; }
+.chart-reset-btn { height:34px; border:1px solid #cbd5e1; border-radius:10px; background:#f8fafc; color:#334155; font-size:12px; font-weight:900; cursor:pointer; padding:0 11px; white-space:nowrap; }
+.chart-reset-btn:hover { background:#e0f2fe; border-color:#7dd3fc; }
 .chart-card h3,.panel-title { margin:2px 4px 4px; font-size:16px; letter-spacing:-.02em; }
 .chart-card p.note { margin:0 4px 10px; color:#667085; font-size:12px; line-height:1.55; }
 .chart { height:345px; position:relative; overflow:auto; }
@@ -216,7 +220,10 @@ a { color:#1d4ed8; text-decoration:none; } a:hover { text-decoration:underline; 
 
   <section class="section grid chart-grid-2 bubble-map-section">
     <div class="card chart-card bubble-map-card">
-      <h3>Robotics coupling × primary taxonomy bubble map</h3>
+      <div class="chart-card-head">
+        <h3>Robotics coupling × primary taxonomy bubble map</h3>
+        <button class="chart-reset-btn" id="bubbleResetBtn" type="button">Reset view</button>
+      </div>
       <p class="note">큰 버블일수록 해당 physical problem과 taxonomy family가 자주 같이 등장해.</p>
       <div id="chart-bubble" class="chart tall"></div>
     </div>
@@ -501,6 +508,9 @@ function setupSelects() {
   ['prioritySelect','paperPrioritySelect'].forEach(id=>fillSelect(id,['Core','High','Scan'],'All priorities'));
 }
 function setAnalysisFilter(partial) { Object.assign(state, partial); syncControls(); renderAnalysis(); }
+function resetAnalysisFilters() {
+  setAnalysisFilter({search:'',session:'ALL',primary:'ALL',ai:'ALL',robot:'ALL',priority:'ALL'});
+}
 function setPaperFilter(partial) { Object.assign(paperState, partial); syncPaperControls(); renderPapers(); activateTab('papers-tab'); }
 function syncControls() {
   if($('searchBox')) $('searchBox').value = state.search;
@@ -757,7 +767,8 @@ function setupEvents() {
   $('aiSelect').addEventListener('change', e=>setAnalysisFilter({ai:e.target.value}));
   $('robotSelect').addEventListener('change', e=>setAnalysisFilter({robot:e.target.value}));
   $('prioritySelect').addEventListener('change', e=>setAnalysisFilter({priority:e.target.value}));
-  $('resetBtn').addEventListener('click',()=>setAnalysisFilter({search:'',session:'ALL',primary:'ALL',ai:'ALL',robot:'ALL',priority:'ALL'}));
+  $('resetBtn').addEventListener('click', resetAnalysisFilters);
+  $('bubbleResetBtn').addEventListener('click', resetAnalysisFilters);
   $('librarySearch').addEventListener('input',()=>renderLibrary());
   $('themeSelect').addEventListener('change',e=>{ currentTheme=e.target.value; document.querySelectorAll('.theme-pill').forEach(b=>b.classList.toggle('active', b.dataset.theme===currentTheme)); renderLibrary(); });
   $('libraryResetBtn').addEventListener('click',()=>{ $('librarySearch').value=''; currentTheme='ALL'; $('themeSelect').value='ALL'; document.querySelectorAll('.theme-pill').forEach(b=>b.classList.toggle('active', b.dataset.theme==='ALL')); renderLibrary(); });
