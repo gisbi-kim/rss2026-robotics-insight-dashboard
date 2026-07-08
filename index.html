@@ -44,8 +44,8 @@ a { color:#1d4ed8; text-decoration:none; } a:hover { text-decoration:underline; 
 .chart-grid-2 { grid-template-columns:1fr 1fr; align-items:stretch; }
 .chart-grid-3 { grid-template-columns:1.1fr 1fr 1fr; align-items:stretch; }
 .chart-card { padding:14px 14px 12px; min-height:420px; }
-.bubble-map-card { grid-column:1/-1; min-height:530px; }
-.bubble-map-card .chart.tall { height:500px; }
+.bubble-map-card { grid-column:1/-1; min-height:620px; }
+.bubble-map-card .chart.tall { height:590px; }
 .bubble-map-section .tag-cloud { grid-column:1/-1; }
 .chart-card h3,.panel-title { margin:2px 4px 4px; font-size:16px; letter-spacing:-.02em; }
 .chart-card p.note { margin:0 4px 10px; color:#667085; font-size:12px; line-height:1.55; }
@@ -70,7 +70,7 @@ a { color:#1d4ed8; text-decoration:none; } a:hover { text-decoration:underline; 
 .flow-count { font-size:10px; fill:#667085; dominant-baseline:middle; }
 .flow-link { fill:none; stroke:#2563eb; stroke-linecap:round; cursor:pointer; opacity:.26; transition:.12s ease; }
 .flow-link:hover { opacity:.72; }
-.bubble-label { font-size:11px; fill:#475467; font-weight:800; }
+.bubble-label { font-size:10px; fill:#475467; font-weight:800; }
 .tag-cloud { padding:16px; }
 .tag-cloud h3 { margin:0 0 10px; }
 .tag-wrap { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
@@ -318,6 +318,26 @@ let selectedPaperId = null;
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const short = (s,n=56) => { s=String(s??''); return s.length>n ? s.slice(0,n-1)+'…' : s; };
+function wrapSvgLabel(s, maxChars=14) {
+  const words = String(s ?? '').replace(/\//g, ' / ').split(/\s+/).filter(Boolean).flatMap(word => {
+    if (!word.includes('-') || word.length <= maxChars) return [word];
+    const parts = word.split('-').filter(Boolean);
+    return parts.map((part, idx) => idx < parts.length - 1 ? `${part}-` : part);
+  });
+  const lines = [];
+  let line = '';
+  words.forEach(word => {
+    const next = line ? `${line} ${word}` : word;
+    if (next.length > maxChars && line) {
+      lines.push(line);
+      line = word;
+    } else {
+      line = next;
+    }
+  });
+  if (line) lines.push(line);
+  return lines;
+}
 const methodShort = (s) => ({
  'VLA/VLM/LLM embodied foundation model':'VLA/VLM', 'Imitation / demonstration learning':'Imitation', 'Diffusion / flow / generative policy':'Diffusion/Flow', 'RL / reward / preference optimization':'RL/Reward', 'World model / memory / predictive dynamics':'World model', 'Planning / search / trajectory optimization':'Planning/Opt.', '3D spatial perception / mapping / state estimation':'3D/Spatial', 'Safety / uncertainty / robustness':'Safety/Unc.', 'Control / dynamics / MPC':'Control/Dynamics', 'Tactile / force / contact sensing':'Tactile/Contact', 'Dataset / benchmark / evaluation infrastructure':'Dataset/Benchmark', 'Human / HRI / assistance':'Human/HRI', 'Hardware / morphology / co-design':'Hardware/Design', 'Classical robotics / task-specific method':'Classical'
 }[s] || short(s,16));
@@ -634,11 +654,15 @@ function renderFlow(items) {
 function renderBubble(items) {
   const primaries = countBy(items,p=>p.primary).slice(0,10).map(x=>x[0]);
   const robots = countBy(items,p=>p.robot_primary).slice(0,10).map(x=>x[0]);
-  const W=1320,H=470, left=210, top=44, cellW=(W-left-24)/Math.max(1,primaries.length), cellH=(H-top-42)/Math.max(1,robots.length);
+  const W=1500,H=560, left=220, top=112, cellW=(W-left-28)/Math.max(1,primaries.length), cellH=(H-top-46)/Math.max(1,robots.length);
   const m=new Map(); let max=0;
   items.forEach(p=>{ if(primaries.includes(p.primary)&&robots.includes(p.robot_primary)) { const k=p.primary+'||'+p.robot_primary; const v=(m.get(k)||0)+1; m.set(k,v); max=Math.max(max,v); } });
   let svg=`<svg class="svg-chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">`;
-  primaries.forEach((p,i)=>{ svg += `<text class="bubble-label" x="${left+i*cellW+cellW/2}" y="20" text-anchor="middle">${esc(short(p,16))}</text>`; });
+  primaries.forEach((p,i)=>{
+    const x=left+i*cellW+cellW/2;
+    const lines=wrapSvgLabel(p,14);
+    svg += `<text class="bubble-label" x="${x}" y="18" text-anchor="middle"><title>${esc(p)}</title>${lines.map((line,idx)=>`<tspan x="${x}" dy="${idx?13:0}">${esc(line)}</tspan>`).join('')}</text>`;
+  });
   robots.forEach((r,j)=>{ svg += `<text class="bubble-label" x="8" y="${top+j*cellH+cellH/2+4}">${esc(robotShort(r))}</text>`; });
   for(let i=0;i<primaries.length;i++) for(let j=0;j<robots.length;j++) {
     const p=primaries[i], r=robots[j], v=m.get(p+'||'+r)||0, x=left+i*cellW+cellW/2, y=top+j*cellH+cellH/2;
