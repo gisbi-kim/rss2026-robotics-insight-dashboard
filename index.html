@@ -23,6 +23,7 @@ a { color:#1d4ed8; text-decoration:none; } a:hover { text-decoration:underline; 
 .source-pill { display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.07); color:#eff6ff; font-size:12.5px; font-weight:750; }
 .tabbar { position:sticky; top:0; z-index:50; display:flex; flex-wrap:wrap; align-items:center; gap:10px; padding:12px 38px; background:rgba(243,246,251,.93); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
 .tab-button { border:1px solid #cbd5e1; background:#fff; color:#334155; padding:10px 16px; border-radius:999px; font-weight:850; cursor:pointer; transition:.16s ease; }
+.tabbar a.tab-button { display:inline-flex; align-items:center; text-decoration:none; }
 .tab-button.active { background:#0f172a; color:#fff; border-color:#0f172a; box-shadow:0 8px 18px rgba(15,23,42,.16); }
 .tab-button:hover { transform:translateY(-1px); }
 .tab-content { display:none; padding:24px 38px 50px; }
@@ -162,6 +163,7 @@ a { color:#1d4ed8; text-decoration:none; } a:hover { text-decoration:underline; 
   <button class="tab-button" data-tab="library-tab">Insight Library</button>
   <button class="tab-button" data-tab="papers-tab">Paper Explorer</button>
   <button class="tab-button" data-tab="report-tab">Research Report</button>
+  <a class="tab-button" href="compute-cost.html">Compute Cost</a>
 </nav>
 
 <main id="analysis-tab" class="tab-content active">
@@ -769,11 +771,11 @@ function renderPaperDetail(id) {
   $('paperDetail').querySelector('[data-filter-detail="robot"]').addEventListener('click',()=>setPaperFilter({robot:p.robot_primary}));
 }
 function activateTab(id) {
-  document.querySelectorAll('.tab-button').forEach(b=>b.classList.toggle('active', b.dataset.tab===id));
+  document.querySelectorAll('.tab-button[data-tab]').forEach(b=>b.classList.toggle('active', b.dataset.tab===id));
   document.querySelectorAll('.tab-content').forEach(c=>c.classList.toggle('active', c.id===id));
 }
 function setupEvents() {
-  document.querySelectorAll('.tab-button').forEach(btn=>btn.addEventListener('click',()=>{ activateTab(btn.dataset.tab); if(btn.dataset.tab==='library-tab') renderLibrary(); if(btn.dataset.tab==='papers-tab') renderPapers(); }));
+  document.querySelectorAll('.tab-button[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{ activateTab(btn.dataset.tab); if(btn.dataset.tab==='library-tab') renderLibrary(); if(btn.dataset.tab==='papers-tab') renderPapers(); }));
   $('searchBox').addEventListener('input', e=>{ state.search=e.target.value; renderAnalysis(); });
   $('sessionSelect').addEventListener('change', e=>setAnalysisFilter({session:e.target.value}));
   $('primarySelect').addEventListener('change', e=>setAnalysisFilter({primary:e.target.value}));
