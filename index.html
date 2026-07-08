@@ -128,6 +128,8 @@ a { color:#1d4ed8; text-decoration:none; } a:hover { text-decoration:underline; 
 .report-doc { background:#fff; border:1px solid #d8dee9; border-radius:18px; box-shadow:var(--shadow); padding:34px 46px; line-height:1.75; max-width:1120px; margin:0 auto 28px; }
 .report-doc h1 { margin:0 0 10px; font-size:30px; letter-spacing:-.04em; } .report-doc h2 { margin-top:2rem; border-bottom:1px solid #e5e7eb; padding-bottom:.35rem; } .report-doc h3 { margin-bottom:.3rem; }
 .report-doc p,.report-doc li { color:#344054; } .report-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+.report-idea-note { margin:.45rem 0 .75rem; padding:9px 11px; border-left:3px solid #2563eb; border-radius:10px; background:#eff6ff; color:#1e3a8a; font-size:13px; line-height:1.65; }
+.report-idea-note b { color:#0f172a; }
 .footer-note { max-width:1500px; margin:22px auto 0; color:#64748b; font-size:12px; line-height:1.6; }
 .tooltip { position:fixed; z-index:100; pointer-events:none; width:min(460px, calc(100vw - 28px)); max-height:min(520px, 62vh); overflow:hidden; display:none; background:rgba(17,24,39,.97); color:#fff; border-radius:12px; padding:12px 14px; font-size:12px; line-height:1.48; box-shadow:0 10px 25px rgba(15,23,42,.28); }
 .tooltip-title { font-size:13px; font-weight:950; line-height:1.35; }
@@ -286,16 +288,16 @@ a { color:#1d4ed8; text-decoration:none; } a:hover { text-decoration:underline; 
 <section class="report-section">
   <h2>5. 제안서/논문 아이디어로 바로 이어지는 10개 방향</h2>
   <ol>
-    <li><b>Contact-grounded VLA:</b> tactile/contact state를 VLA action decoder나 reward model에 넣는 방향.</li>
-    <li><b>World-model-as-evaluator:</b> world model을 policy rollout generator가 아니라 failure prediction/evaluation layer로 쓰는 방향.</li>
-    <li><b>Action-interface scaling:</b> action token/chunk/flow/latent dynamics representation을 cross-embodiment metric으로 평가하는 방향.</li>
-    <li><b>Safety grammar:</b> success rate 외에 violation, recovery latency, intervention cost, uncertainty calibration을 metric set으로 제안하는 방향.</li>
-    <li><b>Robotics benchmark as product:</b> benchmark를 data release가 아니라 failure mining + statistical testing + simulator validation bundle로 만드는 방향.</li>
-    <li><b>Humanoid loco-manipulation:</b> perception-conditioned whole-body control과 manipulation skill을 하나의 motion prior로 묶는 방향.</li>
-    <li><b>HRI ask/assist policy:</b> robot이 언제 묻고, 언제 돕고, 언제 돕지 않아야 하는지 preference/uncertainty로 학습하는 방향.</li>
-    <li><b>Spatial memory for navigation/VLA:</b> map memory, object permanence, uncertainty-aware replanning을 VLA navigation에 결합하는 방향.</li>
-    <li><b>Deformable/fragile vertical:</b> surgical/care/deformable manipulation을 low-data high-stakes domain으로 잡는 방향.</li>
-    <li><b>Real-time physical AI:</b> inference latency, energy, memory, control frequency를 논문 main metric으로 올리는 방향.</li>
+    <li><b>Contact-grounded VLA:</b> tactile/contact state를 VLA action decoder나 reward model에 넣는 방향.<div class="report-idea-note"><b>뜻.</b> VLA가 카메라와 언어만 보고 action을 내는 것이 아니라, 손끝 접촉·미끄러짐·힘·grasp 안정성까지 보고 행동을 보정하게 하자는 뜻이야. reward도 “목표에 도달했나”뿐 아니라 접촉이 안정적이었는지까지 평가하게 만들자는 방향이야.</div></li>
+    <li><b>World-model-as-evaluator:</b> world model을 policy rollout generator가 아니라 failure prediction/evaluation layer로 쓰는 방향.<div class="report-idea-note"><b>뜻.</b> world model을 미래 영상을 예쁘게 생성하는 모델로만 보지 말고, policy 후보를 실제 실행 전에 굴려 보면서 실패 가능성, constraint violation, long-horizon outcome을 평가하는 내부 판단기로 쓰자는 뜻이야.</div></li>
+    <li><b>Action-interface scaling:</b> action token/chunk/flow/latent dynamics representation을 cross-embodiment metric으로 평가하는 방향.<div class="report-idea-note"><b>뜻.</b> 로봇 action을 joint command로 바로 내는 대신 token, 몇 초짜리 chunk, flow trajectory, latent dynamics 같은 표현으로 만들고, 그 표현이 다른 로봇 몸체로 얼마나 잘 옮겨지는지 평가하자는 뜻이야.</div></li>
+    <li><b>Safety grammar:</b> success rate 외에 violation, recovery latency, intervention cost, uncertainty calibration을 metric set으로 제안하는 방향.<div class="report-idea-note"><b>뜻.</b> 성공률 하나로 policy를 평가하지 말고, 위험 규칙을 얼마나 어겼는지, 실패 후 얼마나 빨리 회복했는지, 사람이 얼마나 개입해야 했는지, 불확실성 추정이 맞았는지를 함께 보는 평가 언어를 만들자는 뜻이야.</div></li>
+    <li><b>Robotics benchmark as product:</b> benchmark를 data release가 아니라 failure mining + statistical testing + simulator validation bundle로 만드는 방향.<div class="report-idea-note"><b>뜻.</b> benchmark를 “데이터셋 공개”로 끝내지 말고, policy가 어떤 조건에서 왜 실패하는지 찾고, 통계적으로 비교하고, simulator와 real-world 결과가 맞는지 검증하는 하나의 평가 제품처럼 만들자는 뜻이야.</div></li>
+    <li><b>Humanoid loco-manipulation:</b> perception-conditioned whole-body control과 manipulation skill을 하나의 motion prior로 묶는 방향.<div class="report-idea-note"><b>뜻.</b> 휴머노이드가 본 장면에 맞춰 걷기, 균형 잡기, 몸통 움직임, 팔·손 조작을 따로따로 하지 않고 하나의 통합된 움직임 모델로 배우게 하자는 뜻이야. 예를 들면 선반 위 컵을 집을 때 발 위치, 몸통 기울기, 팔 trajectory, grasp가 같이 나오는 구조야.</div></li>
+    <li><b>HRI ask/assist policy:</b> robot이 언제 묻고, 언제 돕고, 언제 돕지 않아야 하는지 preference/uncertainty로 학습하는 방향.<div class="report-idea-note"><b>뜻.</b> HRI를 대화 능력만으로 보지 말고, 로봇이 확신이 없을 때 질문할지, 바로 도울지, 오히려 방해가 되니 개입하지 않을지를 판단하는 policy로 만들자는 뜻이야.</div></li>
+    <li><b>Spatial memory for navigation/VLA:</b> map memory, object permanence, uncertainty-aware replanning을 VLA navigation에 결합하는 방향.<div class="report-idea-note"><b>뜻.</b> VLA navigation이 언어 명령만 따라가는 것이 아니라, 지나온 공간의 map memory, 가려진 물체가 계속 존재한다는 object permanence, 지도 불확실성에 따른 replanning을 함께 쓰게 하자는 뜻이야.</div></li>
+    <li><b>Deformable/fragile vertical:</b> surgical/care/deformable manipulation을 low-data high-stakes domain으로 잡는 방향.<div class="report-idea-note"><b>뜻.</b> 천, 조직, 사람 몸, 깨지기 쉬운 물체처럼 모양이 변하거나 실패 비용이 큰 대상을 연구 축으로 삼자는 뜻이야. 데이터는 적고 안전 요구는 높기 때문에 tactile/force, uncertainty, careful correction이 강한 contribution이 될 수 있어.</div></li>
+    <li><b>Real-time physical AI:</b> inference latency, energy, memory, control frequency를 논문 main metric으로 올리는 방향.<div class="report-idea-note"><b>뜻.</b> 로봇에서는 정확도나 성공률만큼 지연시간, 에너지, 메모리, 제어 주기가 중요하다는 뜻이야. 실제 로봇에 올렸을 때 늦게 반응하거나 너무 무거운 모델이면 좋은 policy여도 실패할 수 있으니 이를 핵심 metric으로 보자는 방향이야.</div></li>
   </ol>
 </section>
 
