@@ -368,6 +368,7 @@ function captureRouteState(overrides={}) {
     tab: activeTabId(),
     selectedPaperId,
     scrollY: window.scrollY,
+    analysisState: {...state},
     currentTheme,
     librarySearch: $('librarySearch')?.value || '',
     paperState: {...paperState},
@@ -454,12 +455,15 @@ function openPaper(id, {pushHistory=false, resetFilters=false, restoreScroll=fal
 function restoreRouteState(route) {
   const next = route || {};
   hideTooltip();
+  if (next.analysisState) Object.assign(state, next.analysisState);
   if (next.paperState) Object.assign(paperState, next.paperState);
   if (typeof next.selectedPaperId === 'number') selectedPaperId = next.selectedPaperId;
   if (typeof next.currentTheme === 'string') currentTheme = next.currentTheme;
   if ($('librarySearch') && typeof next.librarySearch === 'string') $('librarySearch').value = next.librarySearch;
   if ($('themeSelect')) $('themeSelect').value = currentTheme;
   document.querySelectorAll('.theme-pill').forEach(b=>b.classList.toggle('active', b.dataset.theme===currentTheme));
+  syncControls();
+  renderAnalysis();
   if (next.tab === 'papers-tab' && selectedPaperId) {
     syncPaperControls();
     renderPapers();
@@ -507,7 +511,16 @@ function setupSelects() {
   ['robotSelect','paperRobotSelect'].forEach(id=>fillSelect(id,robots,'All couplings'));
   ['prioritySelect','paperPrioritySelect'].forEach(id=>fillSelect(id,['Core','High','Scan'],'All priorities'));
 }
-function setAnalysisFilter(partial) { Object.assign(state, partial); syncControls(); renderAnalysis(); }
+function setAnalysisFilter(partial, {pushHistory=false}={}) {
+  if (pushHistory && history.pushState) {
+    const nextState = {...state, ...partial};
+    replaceRouteState();
+    history.pushState(captureRouteState({tab:'analysis-tab', analysisState:nextState}), '', `${location.pathname}${location.search}`);
+  }
+  Object.assign(state, partial);
+  syncControls();
+  renderAnalysis();
+}
 function resetAnalysisFilters() {
   setAnalysisFilter({search:'',session:'ALL',primary:'ALL',ai:'ALL',robot:'ALL',priority:'ALL'});
 }
@@ -681,7 +694,7 @@ function renderBubble(items) {
   }
   svg+=`</svg>`;
   $('chart-bubble').innerHTML=svg;
-  $('chart-bubble').querySelectorAll('circle').forEach(c=>c.addEventListener('click',()=>setAnalysisFilter({primary:c.dataset.primary, robot:c.dataset.robot})));
+  $('chart-bubble').querySelectorAll('circle').forEach(c=>c.addEventListener('click',()=>setAnalysisFilter({primary:c.dataset.primary, robot:c.dataset.robot}, {pushHistory:true})));
 }
 function renderTagCloud(items) {
   const cnt = new Map(); items.forEach(p=>p.terms.forEach(t=>cnt.set(t,(cnt.get(t)||0)+1)));
