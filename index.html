@@ -44,6 +44,9 @@ a { color:#1d4ed8; text-decoration:none; } a:hover { text-decoration:underline; 
 .chart-grid-2 { grid-template-columns:1fr 1fr; align-items:stretch; }
 .chart-grid-3 { grid-template-columns:1.1fr 1fr 1fr; align-items:stretch; }
 .chart-card { padding:14px 14px 12px; min-height:420px; }
+.bubble-map-card { grid-column:1/-1; min-height:530px; }
+.bubble-map-card .chart.tall { height:500px; }
+.bubble-map-section .tag-cloud { grid-column:1/-1; }
 .chart-card h3,.panel-title { margin:2px 4px 4px; font-size:16px; letter-spacing:-.02em; }
 .chart-card p.note { margin:0 4px 10px; color:#667085; font-size:12px; line-height:1.55; }
 .chart { height:345px; position:relative; overflow:auto; }
@@ -211,8 +214,8 @@ a { color:#1d4ed8; text-decoration:none; } a:hover { text-decoration:underline; 
     </div>
   </section>
 
-  <section class="section grid chart-grid-2">
-    <div class="card chart-card">
+  <section class="section grid chart-grid-2 bubble-map-section">
+    <div class="card chart-card bubble-map-card">
       <h3>Robotics coupling × primary taxonomy bubble map</h3>
       <p class="note">큰 버블일수록 해당 physical problem과 taxonomy family가 자주 같이 등장해.</p>
       <div id="chart-bubble" class="chart tall"></div>
@@ -631,11 +634,11 @@ function renderFlow(items) {
 function renderBubble(items) {
   const primaries = countBy(items,p=>p.primary).slice(0,10).map(x=>x[0]);
   const robots = countBy(items,p=>p.robot_primary).slice(0,10).map(x=>x[0]);
-  const W=930,H=410, left=160, top=35, cellW=(W-left-20)/Math.max(1,primaries.length), cellH=(H-top-35)/Math.max(1,robots.length);
+  const W=1320,H=470, left=210, top=44, cellW=(W-left-24)/Math.max(1,primaries.length), cellH=(H-top-42)/Math.max(1,robots.length);
   const m=new Map(); let max=0;
   items.forEach(p=>{ if(primaries.includes(p.primary)&&robots.includes(p.robot_primary)) { const k=p.primary+'||'+p.robot_primary; const v=(m.get(k)||0)+1; m.set(k,v); max=Math.max(max,v); } });
   let svg=`<svg class="svg-chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">`;
-  primaries.forEach((p,i)=>{ svg += `<text class="bubble-label" x="${left+i*cellW+cellW/2}" y="18" text-anchor="middle">${esc(short(p,15))}</text>`; });
+  primaries.forEach((p,i)=>{ svg += `<text class="bubble-label" x="${left+i*cellW+cellW/2}" y="20" text-anchor="middle">${esc(short(p,16))}</text>`; });
   robots.forEach((r,j)=>{ svg += `<text class="bubble-label" x="8" y="${top+j*cellH+cellH/2+4}">${esc(robotShort(r))}</text>`; });
   for(let i=0;i<primaries.length;i++) for(let j=0;j<robots.length;j++) {
     const p=primaries[i], r=robots[j], v=m.get(p+'||'+r)||0, x=left+i*cellW+cellW/2, y=top+j*cellH+cellH/2;
